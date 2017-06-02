@@ -205,7 +205,7 @@ showTime model =
       seconds = rem model.runningSeconds 60
     in
       div []
-      [ p [] [ span [ style [("text-align", "center"),("display", "block")]] [text "Time worked without disruptance: "]]
+      [ p [] [ span [ style [("text-align", "center"),("display", "block")]] [text "Time worked without disruption: "]]
       , p [class "timer", style [("font-size", "42px"), ("text-align", "center")]]
         [ span [] [text (String.padLeft 2 '0' <| toString minutes)]
         , span [] [text ":"]
