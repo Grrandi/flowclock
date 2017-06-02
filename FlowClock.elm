@@ -17,7 +17,7 @@ main =
 
 -- MODEL
 
-type State = Running | Stopped | Disturbed
+type State = Running | Stopped | Disrupted
 type Concentration = JustStarted | GettingThere | WorkingOnIt | OnFire | Ommmmm
 
 type alias User = {name : String, hourlySalary : Int}
@@ -50,7 +50,7 @@ update msg model =
       ({model | runningSeconds = 0, state = Running}, Cmd.none)
     Stop ->
       let
-        newModel = {model | state = Disturbed}
+        newModel = {model | state = Disrupted}
       in
         someFunction newModel
     Name n ->
@@ -99,7 +99,7 @@ someFunction model =
           ({newModel | runningSeconds = newModel.runningSeconds + 1}, Cmd.none)
         Stopped ->
           (newModel, Cmd.none)
-        Disturbed ->
+        Disrupted ->
           (newModel, Cmd.none)
 
 
@@ -128,7 +128,7 @@ buttonStyles state =
         , ("border-radius", "50px")
         , ("margin-top", "10px")
         ]
-    Disturbed ->
+    Disrupted ->
       style
         [ ("display", "block")
         , ("margin", "auto")
@@ -147,7 +147,7 @@ showButton model =
         button [onClick Stop, buttonStyles model.state] [text "Stop"]
       Stopped ->
         button [onClick Start, buttonStyles model.state] [text "Start"]
-      Disturbed ->
+      Disrupted ->
         button [onClick Start, buttonStyles model.state] [text "Start"]
 
 zoneStyles : State -> Attribute  msg
@@ -167,7 +167,7 @@ zoneStyles state=
         , ("text-align", "center")
         , ("margin", "0 50px")
         ]
-    Disturbed ->
+    Disrupted ->
       style
         [ ("font-size", "24px")
         , ("background-color", "red")
@@ -202,7 +202,7 @@ showTime model =
       seconds = rem model.runningSeconds 60
     in
       div []
-      [ p [] [ span [ style [("text-align", "center"),("display", "block")]] [text "Time worked without disturbance: "]]
+      [ p [] [ span [ style [("text-align", "center"),("display", "block")]] [text "Time worked without disruptance: "]]
       , p [class "timer", style [("font-size", "42px"), ("text-align", "center")]]
         [ span [] [text (String.padLeft 2 '0' <| toString minutes)]
         , span [] [text ":"]
@@ -213,13 +213,26 @@ showTime model =
 
 showUserInfo : Model -> Html Msg
 showUserInfo model =
-    if model.state == Stopped then
-      div [class "user-info", style [("text-align", "center")]]
-        [ input [ placeholder "Name", onInput Name] []
-        , input [ placeholder "Salary", onInput Salary] []
-        ]
-    else
-      div [style [("display", "none")]] []
+    let
+        userGetter = \x -> x.user
+    in
+      if model.state == Stopped then
+        div [class "user-info", style [("text-align", "center")]]
+          [ input [ placeholder "Name", onInput Name] []
+          , input [ placeholder "Salary", onInput Salary] []
+          ]
+      else
+        div [style [("display", "block"), ("text-align", "center")]]
+          [ div []
+              [ p []
+                [ span [] [text "Name: "]
+                , span [] [text (.name <| userGetter model)]
+                , span [] [text " "]
+                , span [] [text "Salary: "]
+                , span [] [text (toString <| .hourlySalary <| userGetter model)]
+                ]
+              ]
+          ]
 
 
 blameStyle : Attribute msg
@@ -244,7 +257,7 @@ showBlame state =
         p [style [("display", "none")]] []
       Stopped ->
         p [style [("display", "none")]] []
-      Disturbed ->
+      Disrupted ->
         p [blameStyle] [text "Now you did it!"]
 
 
@@ -252,7 +265,7 @@ showBlame state =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every second Tick
+  Time.every millisecond Tick
 
 
 
@@ -287,14 +300,14 @@ flowclockStyle concentration =
         [ ("display", "block")
         , ("width", "500px")
         , ("margin", "auto")
-        , ("background-color", "green")
+        , ("background-color", "limegreen")
         ]
     Ommmmm ->
       style
         [ ("display", "block")
         , ("width", "500px")
         , ("margin", "auto")
-        , ("background-color", "limegreen")
+        , ("background-color", "darkgreen")
         ]
 
 view : Model -> Html Msg
@@ -303,7 +316,7 @@ view model =
       foo = turns (Time.inMinutes model.tick)
     in
       div [ class "flowclock", flowclockStyle model.concentration]
-        [ h1 [] [ text "Flowclock - Productivity Counter" ]
+        [ h1 [style [("text-align", "center")]] [ text "Flowclock - Productivity Counter" ]
         , ( showUserInfo model)
         , ( showProductivity model)
         , ( showTime model)
