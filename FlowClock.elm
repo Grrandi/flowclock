@@ -103,17 +103,77 @@ someFunction model =
           (newModel, Cmd.none)
 
 
+buttonStyles : State -> Attribute msg
+buttonStyles state =
+  case state of
+    Running ->
+      style
+        [ ("display", "block")
+        , ("margin", "auto")
+        , ("font-size", "50px")
+        , ("color", "black")
+        , ("background-color", "salmon")
+        , ("border", "2px solid black")
+        , ("border-radius", "50px")
+        , ("margin-top", "10px")
+        ]
+    Stopped ->
+      style
+        [ ("display", "block")
+        , ("margin", "auto")
+        , ("font-size", "50px")
+        , ("color", "black")
+        , ("background-color", "#C7E8AC")
+        , ("border", "2px solid black")
+        , ("border-radius", "50px")
+        , ("margin-top", "10px")
+        ]
+    Disturbed ->
+      style
+        [ ("display", "block")
+        , ("margin", "auto")
+        , ("font-size", "50px")
+        , ("color", "black")
+        , ("background-color", "#C7E8AC")
+        , ("border", "2px solid black")
+        , ("border-radius", "50px")
+        , ("margin-top", "10px")
+        ]
+
 showButton : Model -> Html Msg
 showButton model =
     case model.state of
       Running ->
-        button [onClick Stop] [text "Stop"]
+        button [onClick Stop, buttonStyles model.state] [text "Stop"]
       Stopped ->
-        button [onClick Start] [text "Start"]
+        button [onClick Start, buttonStyles model.state] [text "Start"]
       Disturbed ->
-        button [onClick Start] [text "Start"]
+        button [onClick Start, buttonStyles model.state] [text "Start"]
 
-
+zoneStyles : State -> Attribute  msg
+zoneStyles state=
+  case state of
+    Running ->
+      style
+        [ ("font-size", "24px")
+        , ("background-color", "teal")
+        , ("text-align", "center")
+        , ("margin", "0 50px")
+        ]
+    Stopped ->
+      style
+        [ ("font-size", "24px")
+        , ("background-color", "teal")
+        , ("text-align", "center")
+        , ("margin", "0 50px")
+        ]
+    Disturbed ->
+      style
+        [ ("font-size", "24px")
+        , ("background-color", "red")
+        , ("text-align", "center")
+        , ("margin", "0 50px")
+        ]
 showProductivity : Model -> Html Msg
 showProductivity model =
   if model.state == Stopped then
@@ -121,15 +181,15 @@ showProductivity model =
   else
     case model.concentration of
       JustStarted ->
-        p [] [ text "Zone 1: Just started"]
+        p [zoneStyles model.state] [ text "Zone 1: Just started"]
       GettingThere ->
-        p [] [ text "Zone 2: Getting there"]
+        p [zoneStyles model.state] [ text "Zone 2: Getting there"]
       WorkingOnIt ->
-        p [] [ text "Zone 3: Working on it"]
+        p [zoneStyles model.state] [ text "Zone 3: Working on it"]
       OnFire ->
-        p [] [ text "Zone 4: On fire"]
+        p [zoneStyles model.state] [ text "Zone 4: On fire"]
       Ommmmm ->
-        p [] [ text "Zone 5: Ommmmm"]
+        p [zoneStyles model.state] [ text "Zone 5: Ommmmm"]
 
 
 showTime : Model -> Html Msg
@@ -142,8 +202,8 @@ showTime model =
       seconds = rem model.runningSeconds 60
     in
       div []
-      [ p [] [ span [] [text "Time worked without disturbance: "]]
-      , p [class "timer", style [("font-size", "42px")]]
+      [ p [] [ span [ style [("text-align", "center"),("display", "block")]] [text "Time worked without disturbance: "]]
+      , p [class "timer", style [("font-size", "42px"), ("text-align", "center")]]
         [ span [] [text (String.padLeft 2 '0' <| toString minutes)]
         , span [] [text ":"]
         , span [] [text (String.padLeft 2 '0' <| toString seconds)]
@@ -162,6 +222,32 @@ showUserInfo model =
       div [style [("display", "none")]] []
 
 
+blameStyle : Attribute msg
+blameStyle =
+    style
+      [ ("text-align", "center")
+      , ("display", "block")
+      , ("border", "2px solid black")
+      , ("border-radius", "30px")
+      , ("background-color", "red")
+      , ("height", "36px")
+      , ("line-height", "36px")
+      , ("margin", "0px 100px 0px 100px")
+      , ("font-size", "24px")
+      ]
+
+
+showBlame : State -> Html Msg
+showBlame state =
+    case state of
+      Running ->
+        p [style [("display", "none")]] []
+      Stopped ->
+        p [style [("display", "none")]] []
+      Disturbed ->
+        p [blameStyle] [text "Now you did it!"]
+
+
 -- SUBSCRIPTIONS
 
 subscriptions : Model -> Sub Msg
@@ -172,26 +258,58 @@ subscriptions model =
 
 -- VIEW
 
-flowclockStyle : Attribute msg
-flowclockStyle =
-    style
-      [ ("display", "block")
-      , ("width", "500px")
-      , ("margin", "auto")
-      ]
+flowclockStyle : Concentration -> Attribute msg
+flowclockStyle concentration =
+  case concentration of
+    JustStarted ->
+      style
+        [ ("display", "block")
+        , ("width", "500px")
+        , ("margin", "auto")
+        , ("background-color", "lightgrey")
+        ]
+    GettingThere ->
+      style
+        [ ("display", "block")
+        , ("width", "500px")
+        , ("margin", "auto")
+        , ("background-color", "lightgoldenrodyellow")
+        ]
+    WorkingOnIt ->
+      style
+        [ ("display", "block")
+        , ("width", "500px")
+        , ("margin", "auto")
+        , ("background-color", "lightgreen")
+        ]
+    OnFire ->
+      style
+        [ ("display", "block")
+        , ("width", "500px")
+        , ("margin", "auto")
+        , ("background-color", "green")
+        ]
+    Ommmmm ->
+      style
+        [ ("display", "block")
+        , ("width", "500px")
+        , ("margin", "auto")
+        , ("background-color", "limegreen")
+        ]
 
 view : Model -> Html Msg
 view model =
     let
       foo = turns (Time.inMinutes model.tick)
     in
-      div [ class "flowclock", flowclockStyle]
+      div [ class "flowclock", flowclockStyle model.concentration]
         [ h1 [] [ text "Flowclock - Productivity Counter" ]
         , ( showUserInfo model)
         , ( showProductivity model)
         , ( showTime model)
         , p [] [text (toString model)]
         , p [] [text (toString model.runningSeconds)]
+        , ( showBlame model.state)
         , ( showButton model)
         , p [] [text (toString model.state)]
         ]
