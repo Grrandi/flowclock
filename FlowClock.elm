@@ -1,4 +1,4 @@
-import Html exposing (Html, p, text, button, div)
+import Html exposing (Html, p, text, button, div, h1)
 import Time exposing (Time, second, millisecond)
 import Html.Events exposing (onClick)
 
@@ -16,13 +16,15 @@ main =
 
 -- MODEL
 
+type State = Running | Stopped | Disturbed
+type Concentration = JustStarted | GettingThere | WorkingOnIt | OnFire | Ommmmm
 
-type alias Model = {tick : Time, runningSeconds : Int, isRunning : Bool}
+type alias Model = {tick : Time, runningSeconds : Int, state : State, concentration : Concentration}
 
 
 init : (Model, Cmd Msg)
 init =
-  ({tick = 0, runningSeconds = 0, isRunning = False}, Cmd.none)
+  ({tick = 0, runningSeconds = 0, state = Stopped, concentration = JustStarted}, Cmd.none)
 
 
 
@@ -42,28 +44,60 @@ update msg model =
       in
           someFunction newModel
     Start ->
-      ({model | runningSeconds = 0, isRunning = True}, Cmd.none)
+      ({model | runningSeconds = 0, state = Running}, Cmd.none)
     Stop ->
       let
-          newModel = {model | isRunning = False}
+          newModel = {model | state = Disturbed}
       in
           someFunction newModel
 
-
+updateConcentration : Model -> Model
+updateConcentration model =
+    if model.runningSeconds <= 5*60 then
+        {model | concentration = JustStarted}
+    else if model.runningSeconds <= 10*60 then
+        {model | concentration = GettingThere}
+    else if model.runningSeconds <= 20*60 then
+        {model | concentration = WorkingOnIt}
+    else if model.runningSeconds <= 30*60 then
+        {model | concentration = OnFire}
+    else
+        {model | concentration = Ommmmm}
 
 someFunction : Model -> (Model, Cmd Msg)
 someFunction model =
   let
-      state = model.isRunning
-  in
-      if state then
-        ({model | runningSeconds = model.runningSeconds + 1}, Cmd.none)
-      else
-        (model, Cmd.none)
+      state = model.state
+      newModel = updateConcentration model
 
-increment_number : Int -> Int
-increment_number number =
-  if number == 9 then 0 else number + 1
+  in
+      case state of
+        Running ->
+          ({newModel | runningSeconds = newModel.runningSeconds + 1}, Cmd.none)
+        Stopped ->
+          (newModel, Cmd.none)
+        Disturbed ->
+          (newModel, Cmd.none)
+
+
+showButton : Model -> Html Msg
+showButton model =
+    case model.state of
+      Running ->
+        button [onClick Stop] [text "Stop"]
+      Stopped ->
+        button [onClick Start] [text "Start"]
+      Disturbed ->
+        button [onClick Start] [text "Start"]
+
+
+showProductivity : Model -> Html Msg
+showProductivity model =
+  if model.state == Stopped then
+    p [] []
+  else
+    case model.concentration of
+      _ -> p [] [ text "fufufu"]
 
 -- SUBSCRIPTIONS
 
@@ -81,9 +115,10 @@ view model =
       foo = turns (Time.inMinutes model.tick)
     in
       div []
-        [ p [] [text (toString model) ]
+        [ h1 [] [ text "Flowclock - Productivity Counter" ]
+        , ( showProductivity model)
+        , p [] [text (toString model)]
         , p [] [text (toString model.runningSeconds)]
-        , button [onClick Start] [text "Start"]
-        , button [onClick Stop] [text "Stop"]
-        , p [] [text (toString model.isRunning)]
+        , ( showButton model)
+        , p [] [text (toString model.state)]
         ]
