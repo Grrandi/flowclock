@@ -1,7 +1,7 @@
-import Html exposing (Html, p, text, button, div, h1, span, input)
+import Html exposing (Html, p, text, button, div, h1, span, input, Attribute)
 import Time exposing (Time, second, millisecond)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes exposing (placeholder)
+import Html.Attributes exposing (..)
 
 
 main : Program Never Model Msg
@@ -141,22 +141,25 @@ showTime model =
       minutes = model.runningSeconds // 60
       seconds = rem model.runningSeconds 60
     in
-      p []
-      [ span [] [text "distufuhaf: "]
-      , span [] [text (String.padLeft 2 '0' <| toString minutes)]
-      , span [] [text ":"]
-      , span [] [text (String.padLeft 2 '0' <| toString seconds)]]
+      div []
+      [ p [] [ span [] [text "Time worked without disturbance: "]]
+      , p [class "timer", style [("font-size", "42px")]]
+        [ span [] [text (String.padLeft 2 '0' <| toString minutes)]
+        , span [] [text ":"]
+        , span [] [text (String.padLeft 2 '0' <| toString seconds)]
+        ]
+      ]
 
 
 showUserInfo : Model -> Html Msg
 showUserInfo model =
     if model.state == Stopped then
-      div []
+      div [class "user-info", style [("text-align", "center")]]
         [ input [ placeholder "Name", onInput Name] []
         , input [ placeholder "Salary", onInput Salary] []
         ]
     else
-      div [] []
+      div [style [("display", "none")]] []
 
 
 -- SUBSCRIPTIONS
@@ -169,12 +172,20 @@ subscriptions model =
 
 -- VIEW
 
+flowclockStyle : Attribute msg
+flowclockStyle =
+    style
+      [ ("display", "block")
+      , ("width", "500px")
+      , ("margin", "auto")
+      ]
+
 view : Model -> Html Msg
 view model =
     let
       foo = turns (Time.inMinutes model.tick)
     in
-      div []
+      div [ class "flowclock", flowclockStyle]
         [ h1 [] [ text "Flowclock - Productivity Counter" ]
         , ( showUserInfo model)
         , ( showProductivity model)
