@@ -116,6 +116,7 @@ buttonStyles state =
         , ("border", "2px solid black")
         , ("border-radius", "50px")
         , ("margin-top", "10px")
+        , ("margin-botton", "20px")
         ]
     Stopped ->
       style
@@ -127,6 +128,7 @@ buttonStyles state =
         , ("border", "2px solid black")
         , ("border-radius", "50px")
         , ("margin-top", "10px")
+        , ("margin-botton", "20px")
         ]
     Disrupted ->
       style
@@ -138,6 +140,7 @@ buttonStyles state =
         , ("border", "2px solid black")
         , ("border-radius", "50px")
         , ("margin-top", "10px")
+        , ("margin-botton", "20px")
         ]
 
 showButton : Model -> Html Msg
@@ -265,7 +268,7 @@ showBlame state =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every millisecond Tick
+  Time.every second Tick
 
 
 
@@ -280,6 +283,7 @@ flowclockStyle concentration =
         , ("width", "500px")
         , ("margin", "auto")
         , ("background-color", "lightgrey")
+        , ("padding-bottom", "10px")
         ]
     GettingThere ->
       style
@@ -287,6 +291,7 @@ flowclockStyle concentration =
         , ("width", "500px")
         , ("margin", "auto")
         , ("background-color", "lightgoldenrodyellow")
+        , ("padding-bottom", "10px")
         ]
     WorkingOnIt ->
       style
@@ -294,6 +299,7 @@ flowclockStyle concentration =
         , ("width", "500px")
         , ("margin", "auto")
         , ("background-color", "lightgreen")
+        , ("padding-bottom", "10px")
         ]
     OnFire ->
       style
@@ -301,6 +307,7 @@ flowclockStyle concentration =
         , ("width", "500px")
         , ("margin", "auto")
         , ("background-color", "limegreen")
+        , ("padding-bottom", "10px")
         ]
     Ommmmm ->
       style
@@ -308,6 +315,7 @@ flowclockStyle concentration =
         , ("width", "500px")
         , ("margin", "auto")
         , ("background-color", "darkgreen")
+        , ("padding-bottom", "10px")
         ]
 
 view : Model -> Html Msg
@@ -320,9 +328,6 @@ view model =
         , ( showUserInfo model)
         , ( showProductivity model)
         , ( showTime model)
-        , p [] [text (toString model)]
-        , p [] [text (toString model.runningSeconds)]
         , ( showBlame model.state)
-        , ( showButton model)
-        , p [] [text (toString model.state)]
+        , div [] [( showButton model)]
         ]
