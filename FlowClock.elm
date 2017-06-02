@@ -120,7 +120,16 @@ showProductivity model =
     p [] []
   else
     case model.concentration of
-      _ -> p [] [ text "fufufu"]
+      JustStarted ->
+        p [] [ text "Zone 1: Just started"]
+      GettingThere ->
+        p [] [ text "Zone 2: Getting there"]
+      WorkingOnIt ->
+        p [] [ text "Zone 3: Working on it"]
+      OnFire ->
+        p [] [ text "Zone 4: On fire"]
+      Ommmmm ->
+        p [] [ text "Zone 5: Ommmmm"]
 
 
 showTime : Model -> Html Msg
