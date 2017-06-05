@@ -1,0 +1,35 @@
+{
+  "name": "flowclock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "api.js",
+  "scripts": {
+    "api": "node api.js",
+    "build": "webpack",
+    "client": "webpack-dev-server --port 4000",
+    "start": "nf start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grrandi/flowclock.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grrandi/flowclock/issues"
+  },
+  "homepage": "https://github.com/Grrandi/flowclock#readme",
+  "dependencies": {
+    "ace-css": "^1.1.0",
+    "css-loader": "^0.28.4",
+    "elm-webpack-loader": "^4.3.1",
+    "file-loader": "^0.11.2",
+    "font-awesome": "^4.7.0",
+    "foreman": "^2.0.0",
+    "json-server": "^0.9.5",
+    "style-loader": "^0.18.2",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
+  }
+}
