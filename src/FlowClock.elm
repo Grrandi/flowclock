@@ -147,11 +147,11 @@ showButton : Model -> Html Msg
 showButton model =
     case model.state of
       Running ->
-        button [onClick Stop, buttonStyles model.state] [text "Stop"]
+        button [onClick Stop, class "btn-common btn-running"] [text "Stop"]
       Stopped ->
-        button [onClick Start, buttonStyles model.state] [text "Start"]
+        button [onClick Start, class "btn-common btn-stopped"] [text "Start"]
       Disrupted ->
-        button [onClick Start, buttonStyles model.state] [text "Start"]
+        button [onClick Start, class "btn-common btn-disrupted"] [text "Start"]
 
 zoneStyles : State -> Attribute  msg
 zoneStyles state=
