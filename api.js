@@ -1,13 +1,30 @@
-var jsonServer = require('json-server')
+const jsonServer = require('json-server')
+const jsonDB = require('node-json-db');
+const express = require('express')
+const app = express()
 
-// Returns an Express server
-var server = jsonServer.create()
+var db = new JsonDB("FlowClockDB", true, false);
 
-// Set default middlewares (logger, static, cors and no-cache)
-server.use(jsonServer.defaults())
+app.get('/', function (req, res) {
+  res.send('Hello World!')
+});
 
-var router = jsonServer.router('db.json')
-server.use(router)
+app.push('/register', function (req, res) {
+  res.send('Hello World!')
+});
 
-console.log('Listening at 4001')
-server.listen(4001)
+app.push('/login', function (req, res) {
+  res.send('Hello World!')
+});
+
+app.push('/log', function (req, res) {
+  res.send('Hello World!')
+});
+
+app.get('/user-data', function (req, res) {
+  res.send('Hello World!')
+});
+
+app.listen(8081, function () {
+  console.log('Example app listening on port 3000!')
+}
