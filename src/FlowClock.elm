@@ -17,17 +17,18 @@ main =
 
 -- MODEL
 
+type Logged = Yes | No
 type State = Running | Stopped | Disrupted
 type Concentration = JustStarted | GettingThere | WorkingOnIt | OnFire | Ommmmm
 
 type alias User = {name : String, hourlySalary : Int}
 
-type alias Model = {tick : Time, runningSeconds : Int, state : State, concentration : Concentration, user : User}
+type alias Model = {tick : Time, runningSeconds : Int, state : State, concentration : Concentration, user : User, logged: Logged}
 
 
 init : (Model, Cmd Msg)
 init =
-  ({tick = 0, runningSeconds = 0, state = Stopped, concentration = JustStarted, user = {name = "", hourlySalary = 0}}, Cmd.none)
+  ({tick = 0, runningSeconds = 0, state = Stopped, concentration = JustStarted, user = {name = "", hourlySalary = 0}, logged = No}, Cmd.none)
 
 
 
@@ -217,11 +218,12 @@ flowclockClass concentration =
     Ommmmm ->
       "flowclock-common ommmmm"
 
-view : Model -> Html Msg
-view model =
-    let
-      foo = turns (Time.inMinutes model.tick)
-    in
+foobar: Model -> Html Msg
+foobar model =
+  case model.logged of
+    No ->
+      div [] [text "Kirjaudu sisään"]
+    Yes ->
       div [ class <| flowclockClass model.concentration]
         [ h1 [style [("text-align", "center")]] [ text "Flowclock - Productivity Counter" ]
         , ( showUserInfo model)
@@ -230,3 +232,10 @@ view model =
         , ( showBlame model.state)
         , div [] [( showButton model)]
         ]
+
+view : Model -> Html Msg
+view model =
+    let
+      foo = turns (Time.inMinutes model.tick)
+    in
+      foobar model
